@@ -146,7 +146,8 @@ Evangelist:
             outputElement.textContent = ""; // clead old content
             app.run({
                 prompt: text,
-                top_k: 1
+                top_k: 1,
+                max_token_len: 128,
             });
         }
 
