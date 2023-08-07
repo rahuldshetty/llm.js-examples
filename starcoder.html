@@ -19,7 +19,7 @@
 <body>
 
 <div class="container">
-      <h1>ggml.js - StarCode</h1>
+      <h1>ggml.js - StarCoder</h1>
 
         <p id="paragraph">
         This project brings
@@ -100,8 +100,8 @@
 
       <form onsubmit="event.preventDefault();">
         <label for="textInput">Enter Python Code:</label>
-        <textarea id="textInput" name="textInput" rows="4" cols="50">
-def fibonacci(</textarea
+        <textarea id="textInput" name="textInput" rows="10">
+def check_prime(</textarea
         >
         <button id="submitBtn" disabled>Loading Model...</button>
       </form>
@@ -134,7 +134,7 @@ def fibonacci(</textarea
             outputElement.textContent = ""; // clead old content
             app.run({
                 prompt: text,
-                max_token_len: 64,
+                max_token_len: 100,
                 top_k: 1,
             });
         }
