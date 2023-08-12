@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ggml.js - starcoder</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/water.css@2/out/light.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+</head>
+<body>
+
+<div class="container">
+      <h1>ggml.js - Llama2</h1>
+
+      <p>
+        In this example, we use ggml.js library to run 
+        <a target="_blank"
+          rel="noopener noreferrer"
+          href="https://github.com/karpathy/llama2.c">
+          llama2.c</a>
+        model on browser.
+      </p>
+
+      <h3>Links</h3>
+      <p>
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://github.com/rahuldshetty/ggml.js.git"
+          style="all: unset; cursor: pointer; font-size: 0.9em"
+        >
+         <i class="fa-brands fa-github fa-xl"></i>
+          ggml.js Source Code
+        </a>
+      </p>
+
+      <p>
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://rahuldshetty.github.io/ggml.js/"
+          style="all: unset; cursor: pointer; font-size: 0.9em"
+        >
+          <i class="fa-solid fa-book fa-xl"></i>
+          ggml.js Documentation
+        </a>
+      </p>
+
+
+      <p>
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://github.com/rahuldshetty/ggml.js-examples/blob/master/llama2.html"
+          style="all: unset; cursor: pointer; font-size: 0.9em"
+        >
+          <i class="fa-brands fa-github fa-xl"></i>
+          Example Source Code
+        </a>
+      </p>
+      
+      <h2>Demo</h2>
+      <progress value="0" max="100" id="progress" hidden="1"></progress>
+
+      <form onsubmit="event.preventDefault();">
+        <label for="textInput">Initial Prompt:</label>
+        <textarea id="textInput" name="textInput" rows="10">
+Mary had a little lamb</textarea
+        >
+        <button id="submitBtn" disabled>Loading Model...</button>
+      </form>
+
+      <div id="result">
+        <h3>Result</h3>
+        <pre><code id="output"></code></pre>
+      </div>
+    </div>
+
+    <script type="module">
+        import {GGML} from "../ggml/ggml.js";
+
+        let submitButton = document.getElementById('submitBtn');
+        let outputElement = document.getElementById('output');
+
+        const on_loaded = () => {
+            submitButton.disabled = false;
+            submitButton.innerText = "Generate";
+        }
+
+        const write_result = (line) => {
+            outputElement.textContent  += line + "\n";
+        }
+
+        const run_model = () => {
+            const text = document.getElementById("textInput").value;
+            submitButton.innerText = "Running...";
+            submitButton.disabled = true;
+            outputElement.textContent = ""; // clead old content
+            app.run({
+                prompt: text,
+                max_token_len: 100,
+                top_k: 1,
+            });
+        }
+
+        const run_complete = () => {
+            submitButton.innerText = "Generate";
+            submitButton.disabled = false;
+        }
+        
+        const app = new GGML(
+            'LLAMA2',
+            'https://huggingface.co/rahuldshetty/ggml.js/resolve/main/llama2/stories15M.bin',
+            on_loaded,
+            write_result,
+            run_complete,
+            'https://huggingface.co/rahuldshetty/ggml.js/resolve/main/llama2/tokenizer.bin',
+        );
+        
+        app.load_worker();
+        submitButton.addEventListener("click", run_model);
+
+    </script>
+
+    </body>
+</html>
