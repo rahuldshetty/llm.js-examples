@@ -195,7 +195,7 @@
 
             let type_input = document.createElement('input');
             type_input.type = 'text';
-            type_input.id =  'type';
+            type_input.id =  'customType';
             type_input.value = "GPT_2"
             type_input.placeholder = "TYPE"
             div.appendChild(type_input);
@@ -248,7 +248,16 @@
 
         const load_model = (e) => {
             const selected = document.querySelector('input[name="llm"]:checked').id;
-            const llm = available_llms[Number.parseInt(selected)];
+            let llm;
+            if(selected != -1)
+            {
+                llm = available_llms[Number.parseInt(selected)];
+            } else {
+                llm = {
+                    model: document.getElementById("customURL").value,
+                    type: document.getElementById("customType").value,
+                }
+            }
             load_llm_from_url(llm.model, llm.type);
         }
 
