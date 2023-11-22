@@ -86,7 +86,7 @@ Mary had a little lamb</textarea
     </div>
 
     <script type="module">
-        import {GGML} from "./ggml/ggml.js";
+        import {LLM} from "./llm.js/llm.js";
 
         let submitButton = document.getElementById('submitBtn');
         let outputElement = document.getElementById('output');
@@ -117,7 +117,7 @@ Mary had a little lamb</textarea
             submitButton.disabled = false;
         }
         
-        const app = new GGML(
+        const app = new LLM(
             'LLAMA2',
             'https://huggingface.co/rahuldshetty/ggml.js/resolve/main/llama2/stories15M.bin',
             on_loaded,

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LLM.js - Playground</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/water.css@2/out/light.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+</head>
+<style>
+#llm_list {
+    display: grid;
+}
+
+#llm_list > div {
+  
+}
+
+</style>
+<body>
+
+<div class="container">
+      <h1><a href="https://rahuldshetty.github.io/llm.js/#/" target="_blank">LLM.js</a> - Playground</h1>
+
+      <p>
+        Run <b>Large-Language Models (LLMs)</b> 🚀 directly in your browser 🌐! 
+      </p>
+
+      <p>
+        Learn More: 📜 <a href="https://rahuldshetty.github.io/llm.js/#/api_guide" target="_blank">API Reference</a>
+      </p>
+
+      <p>
+        Developed By: ✒️ <a href="https://rahuldshetty.github.io/" target="_blank">RDS </a>
+      </p>
+
+
+      <h2>Demo</h2>
+
+      <p>
+        This web demo enables you to run LLM models from Hugging Face (GGUF/GGML/tiny-llama2/starcoder/etc) directly in your browser.
+      </p>
+
+      <form onsubmit="event.preventDefault();">
+        <div>
+            <span>Pick a Model:</span>
+            <progress id="progress" hidden></progress>
+            <div id="llm_list">
+            </div>
+            <button id="loadBtn">Load Model</button>
+        </div>
+
+        <label for="textInput">Craft your <i>prompt</i>📄:</label>
+        <textarea id="textInput" name="textInput" rows="10"></textarea>
+                
+        <button id="submitBtn" disabled>Run</button>
+      </form>
+
+      <div id="result">
+        <h3>Result</h3>
+        <pre><code id="output" style="white-space: pre-wrap;"></code></pre>
+      </div>
+    </div>
+
+    <script type="module">
+        import {LLM} from "./llm.js/llm.js";
+
+        let LLMEngine;
+
+        let progress = document.getElementById('progress');
+        let loadButton = document.getElementById('loadBtn');
+        let submitButton = document.getElementById('submitBtn');
+
+        let inputElement = document.getElementById('textInput');;
+        let outputElement = document.getElementById('output');
+
+        const available_llms = [
+            {
+                "id": 0,
+                "name": "LLaMa Lite (289 MB)",
+                "link": "https://huggingface.co/Felladrin/llama2_xs_460M_experimental_evol_instruct",
+                "model": "https://huggingface.co/rahuldshetty/llm.js/resolve/main/llama2_xs_460m_experimental_evol_instruct.q4_k_m.gguf",
+                "prompt": "### Instruction:\n{prompt}\n\n### Response:\n",
+                "type": "LLAMA"
+            },
+            {
+                "id": 1,
+                "name": "TinyLLama 1.5T (482 MB)",
+                "link": "https://huggingface.co/Corianas/tiny-llama-miniguanaco-1.5T",
+                "model": "https://huggingface.co/rahuldshetty/llm.js/resolve/main/tiny-llama-miniguanaco-1.5t.q2_k.gguf",
+                "prompt": "{prompt}\n",
+                "type": "LLAMA"
+            },
+            {
+                "id": 2,
+                "name": "TinyMistral-248M-Alpaca (156 MB)",
+                "link": "https://huggingface.co/Felladrin/TinyMistral-248M-Evol-Instruct",
+                "model": "https://huggingface.co/afrideva/TinyMistral-248M-Alpaca-GGUF/resolve/main/tinymistral-248m-alpaca.q4_k_m.gguf",
+                "prompt": "### Instruction:\n{prompt}\n\n### Response:\n",
+                "type": "LLAMA"
+            },
+            {
+                "id": 3,
+                "name": "Tiny StarCoder-Py (257 MB)",
+                "link": "https://huggingface.co/bigcode/tiny_starcoder_py",
+                "model": "https://huggingface.co/rahuldshetty/ggml.js/resolve/main/starcoder.bin",
+                "prompt": "def factorial(n):",
+                "type": "STARCODER"
+            }
+        ]
+        
+        // Show Available LLMs
+        const populate_llm_list = () => {
+            const head = document.getElementById('llm_list');
+            
+            let div = document.createElement('div');
+
+            for(const llm of available_llms){
+                // Radio Button
+                let top = document.createElement('div');
+
+                let item = document.createElement('input');
+                item.type = 'radio';
+                item.id =  llm.id;
+                item.name = 'llm'
+                item.value = llm.name
+
+                if(llm.id == "0"){
+                    item.checked = true;
+                    inputElement.textContent = available_llms[0].prompt;
+                }
+                
+                // Label
+                let label = document.createElement('label');
+                item.for =  llm.id;
+
+                // Link
+                let anchor = document.createElement('a');
+                anchor.href = llm.link;
+                anchor.target = "_blank";
+                anchor.appendChild(document.createTextNode(llm.name))
+
+                label.appendChild(
+                    anchor
+                );
+
+                top.appendChild(item);
+                top.appendChild(label);
+
+                head.appendChild(top);
+                head.appendChild(document.createElement('br'));
+
+
+                // Event handler: Selecting Radio Button
+                item.addEventListener('change', (e)=>{
+                    if(e.target.id)
+                        inputElement.textContent = available_llms[Number.parseInt(e.target.id)].prompt;
+                    submitButton.disabled = true;
+                    div.hidden = true;
+                })
+            }
+
+            // Custom
+            let top = document.createElement('div');
+            
+            let item = document.createElement('input');
+            item.type = 'radio';
+            item.id =  -1;
+            item.name = 'llm'
+            item.value = 'Custom'
+
+            let label = document.createElement('label');
+            item.for =  -1;
+            label.appendChild(document.createTextNode('Custom '));
+            
+            // Input Text
+            div.hidden = true;
+
+            let url_input = document.createElement('input');
+            url_input.type = 'text';
+            url_input.id =  'customURL';
+            url_input.value = "https://huggingface.co/rahuldshetty/ggml.js/resolve/main/gpt2-roleplay.bin"
+            url_input.placeholder = "URL"
+            url_input.size = 60
+            div.appendChild(url_input);
+
+            let type_input = document.createElement('input');
+            type_input.type = 'text';
+            type_input.id =  'type';
+            type_input.value = "GPT_2"
+            type_input.placeholder = "TYPE"
+            div.appendChild(type_input);
+
+            top.appendChild(item);
+            top.appendChild(label);
+
+            head.appendChild(top);
+            head.appendChild(div);
+
+            // Event handler: Selecting Radio Button
+            item.addEventListener('change', (e)=>{
+                inputElement.textContent = "";
+                submitButton.disabled = true;
+                div.hidden = false;
+            })
+        }
+
+        // Event Listener Functions
+        const on_loaded = () => {
+            loadButton.disabled = false;
+            submitButton.disabled = false;
+            progress.hidden = true;
+        }
+
+        const write_result = (line) => {
+            outputElement.textContent  += line + "\n";
+        }
+
+        const run_complete = () => {
+            submitButton.disabled = false;
+        }
+
+        const load_llm_from_url = (link, type) => {
+            progress.hidden = false;
+            loadButton.disabled = true;
+
+            LLMEngine = new LLM(
+                type,
+                link,
+                on_loaded,
+                write_result,
+                run_complete
+            );
+
+            LLMEngine.load_worker();
+        }
+
+        // Actions
+
+        const load_model = (e) => {
+            const selected = document.querySelector('input[name="llm"]:checked').id;
+            const llm = available_llms[Number.parseInt(selected)];
+            load_llm_from_url(llm.model, llm.type);
+        }
+
+        const run_model = (e) => {
+            const text = document.getElementById("textInput").value;
+            submitButton.disabled = true;
+            outputElement.textContent = ""; // clead old content
+            LLMEngine.run({
+                prompt: text,
+                max_token_len: 100,
+                top_k: 1,
+            });
+        }
+
+        // Loader Scripts
+        populate_llm_list();
+        loadButton.addEventListener("click", load_model);        
+        submitButton.addEventListener("click", run_model);
+
+    </script>
+
+    </body>
+</html>

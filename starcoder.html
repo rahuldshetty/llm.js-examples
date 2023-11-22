@@ -113,7 +113,7 @@ def check_prime(</textarea
     </div>
 
     <script type="module">
-        import {GGML} from "./ggml/ggml.js";
+        import {LLM} from "./llm.js/llm.js";
 
         let submitButton = document.getElementById('submitBtn');
         let outputElement = document.getElementById('output');
@@ -144,7 +144,7 @@ def check_prime(</textarea
             submitButton.disabled = false;
         }
         
-        const app = new GGML(
+        const app = new LLM(
             'STARCODER',
             'https://huggingface.co/rahuldshetty/ggml.js/resolve/main/starcoder.bin',
             on_loaded,

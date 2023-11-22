@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ggml.js - gpt2-roleplay</title>
+    <title>llm.js - gpt2-roleplay</title>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/water.css@2/out/light.css"
@@ -19,7 +19,7 @@
 <body>
 
 <div class="container">
-      <h1>ggml.js - GPT2 Roleplay</h1>
+      <h1>llm.js - GPT2 Roleplay</h1>
 
         <p id="paragraph">
         This project brings
@@ -54,7 +54,7 @@
       </p>
 
       <p>
-        In this example, we use ggml.js library to run gpt2 model on browser.
+        In this example, we use llm.js library to run gpt2 model on browser.
       </p>
 
       <h3>Links</h3>
@@ -62,11 +62,11 @@
         <a
           target="_blank"
           rel="noopener noreferrer"
-          href="https://github.com/rahuldshetty/ggml.js.git"
+          href="https://github.com/rahuldshetty/llm.js.git"
           style="all: unset; cursor: pointer; font-size: 0.9em"
         >
          <i class="fa-brands fa-github fa-xl"></i>
-          ggml.js Source Code
+          llm.js Source Code
         </a>
       </p>
 
@@ -74,11 +74,11 @@
         <a
           target="_blank"
           rel="noopener noreferrer"
-          href="https://rahuldshetty.github.io/ggml.js/"
+          href="https://rahuldshetty.github.io/llm.js/"
           style="all: unset; cursor: pointer; font-size: 0.9em"
         >
           <i class="fa-solid fa-book fa-xl"></i>
-          ggml.js Documentation
+          llm.js Documentation
         </a>
       </p>
 
@@ -125,7 +125,7 @@ Evangelist:
     </div>
 
     <script type="module">
-        import {GGML} from "./ggml/ggml.js";
+        import {LLM} from "./llm.js/llm.js";
 
         let submitButton = document.getElementById('submitBtn');
         let outputElement = document.getElementById('output');
@@ -156,7 +156,7 @@ Evangelist:
             submitButton.disabled = false;
         }
         
-        const app = new GGML(
+        const app = new LLM(
             'GPT_2',
             'https://huggingface.co/rahuldshetty/ggml.js/resolve/main/gpt2-roleplay.bin',
             on_loaded,
