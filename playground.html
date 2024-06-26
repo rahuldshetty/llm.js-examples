@@ -47,7 +47,7 @@
       <h2>Demo</h2>
 
       <p>
-        This web demo enables you to run LLM models from Hugging Face (GGUF/GGML/tiny-llama2/starcoder/etc) directly in your browser.
+        This web demo enables you to run LLM models from Hugging Face (GGUF based) directly in your browser.
       </p>
 
       <form onsubmit="event.preventDefault();">
@@ -90,7 +90,7 @@
                 "link": "https://huggingface.co/Felladrin/TinyMistral-248M-SFT-v4",
                 "model": "https://huggingface.co/rahuldshetty/llm.js/resolve/main/TinyMistral-248M-SFT-v4.Q8_0.gguf",
                 "prompt": "<|im_start|>user\nWho is Sherlock Holmes?<|im_end|>\n<|im_start|>assistant\n",
-                "type": "LLAMA"
+                "type": "GGUF_CPU"
             },
             {
                 "id": 1,
@@ -98,7 +98,7 @@
                 "link": "https://huggingface.co/Felladrin/llama2_xs_460M_experimental_evol_instruct",
                 "model": "https://huggingface.co/rahuldshetty/llm.js/resolve/main/llama2_xs_460m_experimental_evol_instruct.q4_k_m.gguf",
                 "prompt": "### Instruction:\n{prompt}\n\n### Response:\n",
-                "type": "LLAMA"
+                "type": "GGUF_CPU"
             },
             {
                 "id": 2,
@@ -106,7 +106,7 @@
                 "link": "https://huggingface.co/Corianas/tiny-llama-miniguanaco-1.5T",
                 "model": "https://huggingface.co/rahuldshetty/llm.js/resolve/main/tiny-llama-miniguanaco-1.5t.q2_k.gguf",
                 "prompt": "{prompt}\n",
-                "type": "LLAMA"
+                "type": "GGUF_CPU"
             },
             {
                 "id": 3,
@@ -114,15 +114,7 @@
                 "link": "https://huggingface.co/Felladrin/TinyMistral-248M-Evol-Instruct",
                 "model": "https://huggingface.co/afrideva/TinyMistral-248M-Alpaca-GGUF/resolve/main/tinymistral-248m-alpaca.q4_k_m.gguf",
                 "prompt": "### Instruction:\n{prompt}\n\n### Response:\n",
-                "type": "LLAMA"
-            },
-            {
-                "id": 4,
-                "name": "Tiny StarCoder-Py (257 MB)",
-                "link": "https://huggingface.co/bigcode/tiny_starcoder_py",
-                "model": "https://huggingface.co/rahuldshetty/ggml.js/resolve/main/starcoder.bin",
-                "prompt": "def factorial(n):",
-                "type": "STARCODER"
+                "type": "GGUF_CPU"
             }
         ]
         
@@ -196,7 +188,7 @@
             let url_input = document.createElement('input');
             url_input.type = 'text';
             url_input.id =  'customURL';
-            url_input.value = "https://huggingface.co/rahuldshetty/ggml.js/resolve/main/gpt2-roleplay.bin"
+            url_input.value = "https://huggingface.co/rahuldshetty/llm.js/resolve/main/TinyMistral-248M-SFT-v4.Q8_0.gguf"
             url_input.placeholder = "URL"
             url_input.size = 60
             div.appendChild(url_input);
@@ -204,7 +196,7 @@
             let type_input = document.createElement('input');
             type_input.type = 'text';
             type_input.id =  'customType';
-            type_input.value = "GPT_2"
+            type_input.value = "GGUF_CPU"
             type_input.placeholder = "TYPE"
             div.appendChild(type_input);
 

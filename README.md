@@ -1,6 +1,6 @@
-# ggml.js Examples
+# LLM.js Examples
 
-This repository contains example code for ggml.js library.
+This repository contains example code for LLM.js library.
 
 ## LLM.js Playground
 
