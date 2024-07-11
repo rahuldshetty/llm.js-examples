@@ -37,6 +37,8 @@
 
       <p>
         Learn More: 📜 <a href="https://rahuldshetty.github.io/llm.js/#/api_guide" target="_blank">API Reference</a>
+
+        Guidance: <a href="https://rahuldshetty.github.io/llm.js/#/guidance" target="_blank">API Reference</a>
       </p>
 
       <p>
@@ -61,6 +63,20 @@
 
         <label for="textInput">Craft your <i>prompt</i>📄:</label>
         <textarea id="textInput" name="textInput" rows="10"></textarea>
+
+        <div>
+            <span>Use <a href="https://rahuldshetty.github.io/llm.js/#/guidance">Guidance</a>:</span>
+            <input type="radio" id="none" name="structure_llm" value="none" checked>
+            <label for="none">None</label>
+
+            <input type="radio" id="json-radio" name="structure_llm" value="json">
+            <label for="json-radio">JSON</label>
+
+            <input type="radio" id="cfg-radio" name="structure_llm" value="cfg">
+            <label for="cfg-radio">CFG</label>
+
+            <textarea style="display: none;" id="guidanceInput" name="textInput" rows="3" placeholder="Enter Grammar/JSON Schema"></textarea>
+        </div>
                 
         <button id="submitBtn" disabled>Run</button>
       </form>
@@ -80,12 +96,29 @@
         let loadButton = document.getElementById('loadBtn');
         let submitButton = document.getElementById('submitBtn');
 
-        let inputElement = document.getElementById('textInput');;
+        const radioButtons = document.querySelectorAll('input[name="structure_llm"]');
+
+        let inputElement = document.getElementById('textInput');
         let outputElement = document.getElementById('output');
+
+        let guidanceInput = document.getElementById('guidanceInput');
+        let selectedOption = "none";
+        let jsonGrammar = '{"type": "array","items": {"type": "string"},"minItems": 3,"maxItems": 9}';
+        let cgfGrammar = `root ::= item+
+item ::= "- " ([a-zA-Z]+){1,10} "\\n"
+`;
 
         const available_llms = [
             {
                 "id": 0,
+                "name": "Qwen2-0.5B-Instruct (353 MB)",
+                "link": "https://huggingface.co/Qwen/Qwen2-0.5B-Instruct-GGUF",
+                "model": "https://huggingface.co/Qwen/Qwen2-0.5B-Instruct-GGUF/resolve/main/qwen2-0_5b-instruct-q4_0.gguf",
+                "prompt": "<|im_start|>user\nList the 9 planets in Solar System<|im_end|>\n<|im_start|>assistant\n",
+                "type": "GGUF_CPU"
+            },
+            {
+                "id": 1,
                 "name": "TinyMistral-248M-SFT-v4 (264 MB)",
                 "link": "https://huggingface.co/Felladrin/TinyMistral-248M-SFT-v4",
                 "model": "https://huggingface.co/rahuldshetty/llm.js/resolve/main/TinyMistral-248M-SFT-v4.Q8_0.gguf",
@@ -93,7 +126,7 @@
                 "type": "GGUF_CPU"
             },
             {
-                "id": 1,
+                "id": 2,
                 "name": "LLaMa Lite (289 MB)",
                 "link": "https://huggingface.co/Felladrin/llama2_xs_460M_experimental_evol_instruct",
                 "model": "https://huggingface.co/rahuldshetty/llm.js/resolve/main/llama2_xs_460m_experimental_evol_instruct.q4_k_m.gguf",
@@ -101,7 +134,7 @@
                 "type": "GGUF_CPU"
             },
             {
-                "id": 2,
+                "id": 3,
                 "name": "TinyLLama 1.5T (482 MB)",
                 "link": "https://huggingface.co/Corianas/tiny-llama-miniguanaco-1.5T",
                 "model": "https://huggingface.co/rahuldshetty/llm.js/resolve/main/tiny-llama-miniguanaco-1.5t.q2_k.gguf",
@@ -109,7 +142,7 @@
                 "type": "GGUF_CPU"
             },
             {
-                "id": 3,
+                "id": 4,
                 "name": "TinyMistral-248M-Alpaca (156 MB)",
                 "link": "https://huggingface.co/Felladrin/TinyMistral-248M-Evol-Instruct",
                 "model": "https://huggingface.co/afrideva/TinyMistral-248M-Alpaca-GGUF/resolve/main/tinymistral-248m-alpaca.q4_k_m.gguf",
@@ -262,20 +295,61 @@
         }
 
         const run_model = (e) => {
-            const text = document.getElementById("textInput").value;
+            const text = inputElement.value;
             submitButton.disabled = true;
             outputElement.textContent = ""; // clead old content
-            LLMEngine.run({
+            let params = {
                 prompt: text,
                 max_token_len: 100,
-                top_k: 1,
-            });
+                top_k: 1
+            }
+            
+            if (selectedOption == "cfg"){
+                params['grammar'] = cgfGrammar;
+            } else if(selectedOption == "json"){
+                params['json_schema'] = jsonGrammar;
+            }
+            LLMEngine.run(params);
+        }
+
+        const onTextareaInput = (event) => {
+            const text = event.target.value;
+            if (selectedOption == "cfg"){
+                cgfGrammar = text;
+            } else if (selectedOption == "json"){
+                jsonGrammar = text;
+            }
+        }
+
+
+        const onRadioButtonSelected = (e) =>{
+            selectedOption = e.target.value;
+
+            // Hide/Unhide guidance input
+            if (selectedOption != "none"){
+                guidanceInput.style.display = "block";
+            } else{
+                guidanceInput.style.display = "none";
+            }
+
+            // Set Event listeners
+            if (selectedOption == 'cfg'){
+                guidanceInput.value = cgfGrammar;
+            } else if (selectedOption == 'json'){
+                guidanceInput.value = jsonGrammar;
+            }
         }
 
         // Loader Scripts
         populate_llm_list();
         loadButton.addEventListener("click", load_model);        
         submitButton.addEventListener("click", run_model);
+        guidanceInput.addEventListener("input", onTextareaInput);
+
+        // Add event listeners to each radio button
+        radioButtons.forEach(radio => {
+            radio.addEventListener('change', onRadioButtonSelected);
+        });
 
     </script>
 
